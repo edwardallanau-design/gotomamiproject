@@ -384,16 +384,26 @@ VALUES
    '2026-05-02 19:00:00', NULL, false, 'draft', NOW(), NOW());
 
 
--- ── 5. Page Content (About page) ─────────────────────────────
+-- ── 5. Page Content ───────────────────────────────────────────
 --
 -- Global slug: page-content → table: page_content
 -- Nested group fields are flattened with underscores:
---   about.eyebrow                      → about_eyebrow
---   about.headerTitle                  → about_header_title
---   about.tagline                      → about_tagline
---   about.valuesHeading                → about_values_heading
---   about.storyFormatting.background   → about_story_formatting_background
---   about.storyFormatting.textAlign    → about_story_formatting_text_align
+--   home.eyebrow        → home_eyebrow
+--   home.headerTitle    → home_header_title
+--   menu.eyebrow        → menu_eyebrow
+--   menu.headerTitle    → menu_header_title
+--   gallery.eyebrow     → gallery_eyebrow
+--   gallery.headerTitle → gallery_header_title
+--   events.eyebrow      → events_eyebrow
+--   events.headerTitle  → events_header_title
+--   contact.eyebrow     → contact_eyebrow
+--   contact.headerTitle → contact_header_title
+--   about.eyebrow                        → about_eyebrow
+--   about.headerTitle                    → about_header_title
+--   about.tagline                        → about_tagline
+--   about.valuesHeading                  → about_values_heading
+--   about.storyFormatting.background     → about_story_formatting_background
+--   about.storyFormatting.textAlign      → about_story_formatting_text_align
 --   about.storyFormatting.containerWidth → about_story_formatting_container_width
 -- Rich text is stored as JSONB (same Lexical format as elsewhere).
 -- The values array lives in a separate table: page_content_about_values
@@ -401,6 +411,16 @@ VALUES
 -- Run this AFTER `npm run dev` has created the tables via Payload migrations.
 
 INSERT INTO page_content (
+  home_eyebrow,
+  home_header_title,
+  menu_eyebrow,
+  menu_header_title,
+  gallery_eyebrow,
+  gallery_header_title,
+  events_eyebrow,
+  events_header_title,
+  contact_eyebrow,
+  contact_header_title,
   about_eyebrow,
   about_header_title,
   about_tagline,
@@ -417,6 +437,16 @@ INSERT INTO page_content (
   created_at
 )
 VALUES (
+  'Our Selection',
+  'Featured Dishes',
+  'What We Offer',
+  'Our Menu',
+  'A Visual Story',
+  'Gallery',
+  'What''s Coming Up',
+  'Events & Specials',
+  'Find Us',
+  'Contact & Location',
   'Who We Are',
   'About Us',
   'Where every meal tells a story.',
@@ -436,11 +466,10 @@ VALUES (
   NOW()
 );
 
-INSERT INTO page_content_about_values ("order", parent_id, icon, title, description)
+INSERT INTO page_content_about_values (_order, _parent_id, id, icon, title, description)
 VALUES
-  (1, (SELECT id FROM page_content LIMIT 1), '🌿',  'Fresh & Seasonal',  'We source the finest local and seasonal ingredients to keep every dish vibrant and full of flavour.'),
-  (2, (SELECT id FROM page_content LIMIT 1), '👨‍🍳', 'Crafted with Care', 'Every plate is prepared by our dedicated kitchen team with time-honoured techniques and modern creativity.'),
-  (3, (SELECT id FROM page_content LIMIT 1), '🤝',  'Warm Hospitality',  'From the moment you walk in, we treat every guest like family. Your experience is our priority.');
-
+  (1, (SELECT id FROM page_content LIMIT 1), '69a3a3e1673863b1a4df19fa', '🌿', 'Fresh & Seasonal', 'We source the finest local and seasonal ingredients to keep every dish vibrant and full of flavour.'),
+  (2, (SELECT id FROM page_content LIMIT 1), '69a3a3e1673863b1a4df19fb', '👨‍🍳', 'Crafted with Care', 'Every plate is prepared by our dedicated kitchen team with time-honoured techniques and modern creativity.'),
+  (3, (SELECT id FROM page_content LIMIT 1), '69a3a3e1673863b1a4df19fc', '🤝', 'Warm Hospitality', 'From the moment you walk in, we treat every guest like family. Your experience is our priority.')
 
 COMMIT;

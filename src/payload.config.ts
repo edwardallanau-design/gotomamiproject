@@ -17,6 +17,29 @@ import { SiteSettings } from './globals/SiteSettings.ts'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+// Resolve the canonical server URL, falling back to Vercel's automatic env vars.
+// VERCEL_PROJECT_PRODUCTION_URL = stable production hostname (no protocol)
+// VERCEL_URL                    = current deployment hostname (no protocol)
+const serverUrl =
+  process.env['NEXT_PUBLIC_SERVER_URL'] ??
+  (process.env['VERCEL_PROJECT_PRODUCTION_URL']
+    ? `https://${process.env['VERCEL_PROJECT_PRODUCTION_URL']}`
+    : process.env['VERCEL_URL']
+      ? `https://${process.env['VERCEL_URL']}`
+      : 'http://localhost:3000')
+
+// Always include the Vercel system URLs unconditionally so that even if
+// NEXT_PUBLIC_SERVER_URL is set to localhost (common during local dev), the
+// actual production and preview origins are never accidentally excluded.
+const allowedOrigins = [
+  serverUrl,
+  process.env['VERCEL_PROJECT_PRODUCTION_URL']
+    ? `https://${process.env['VERCEL_PROJECT_PRODUCTION_URL']}`
+    : null,
+  process.env['VERCEL_URL'] ? `https://${process.env['VERCEL_URL']}` : null,
+  'http://localhost:3000',
+].filter((v): v is string => Boolean(v))
+
 export default buildConfig({
   // ── Admin Panel ─────────────────────────────────────────────────────────────
   admin: {
@@ -68,8 +91,8 @@ export default buildConfig({
   secret: process.env['PAYLOAD_SECRET']!,
 
   // ── CORS & CSRF ─────────────────────────────────────────────────────────────
-  cors: [process.env['NEXT_PUBLIC_SERVER_URL'], 'http://localhost:3000'].filter(Boolean) as string[],
-  csrf: [process.env['NEXT_PUBLIC_SERVER_URL'], 'http://localhost:3000'].filter(Boolean) as string[],
+  cors: allowedOrigins,
+  csrf: allowedOrigins,
 
   // ── TypeScript ───────────────────────────────────────────────────────────────
   typescript: {
@@ -82,7 +105,7 @@ export default buildConfig({
   },
 
   // ── Misc ────────────────────────────────────────────────────────────────────
-  serverURL: process.env['NEXT_PUBLIC_SERVER_URL'] ?? 'http://localhost:3000',
+  serverURL: serverUrl,
   routes: {
     admin: '/admin',
     api: '/api',
